@@ -17,7 +17,7 @@ Vue.use(VueUpload);
 module.exports = {
     ready:function(){
         // 上传绑定
-        that.$upload({
+        this.$upload({
             input:document.querySelector("#upload"),
             url:"/api/upload/",
             // 额外附加字段
