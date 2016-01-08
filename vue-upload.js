@@ -170,18 +170,11 @@
 				if (that.multiple) {
 					that.input.setAttribute("multiple", "multiple");
 				}
-				var up = function(e) {
-					that.getFiles(e);
-					if (that.auto) {
-						that.go(e);
-					}
-				};
 				that.input.addEventListener("change", function(e) {
 					that.getFiles(e);
 					if (that.auto) {
 						that.go(e);
 					}
-					that.input.value="";
 				}, false);
 			}
 
