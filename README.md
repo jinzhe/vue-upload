@@ -12,7 +12,7 @@
 * 支持裁减图片缩放，包括移动端手势支持
 
 
-![](http://ww1.sinaimg.cn/large/823603acgw1ez1n57t8jug20d40acwjw.gif)
+![](http://ww1.sinaimg.cn/large/823603acgw1f7ngqzth6ig20hq0eku0x.gif)
 
 
 # Options
