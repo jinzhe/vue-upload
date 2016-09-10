@@ -374,7 +374,7 @@ export default {
             let sy= Math.round(Math.abs(this.scaleY)*this.img.naturalHeight/this.scaleHeight) //图像源y坐标
             let sw=this.width*this.img.naturalWidth/this.scaleWidth
             let sh=this.height*this.img.naturalHeight/this.scaleHeight
-            this.context.drawImage(this.img,sx,sy,sw,sh,0,0,this.width,this.height)
+            this.context.drawImage(this.img,sx,sy,sw,sh,0,0,this.width,this.height/this.cropGetRatio())
         },
         cropZoom(){
             let s=this.scale/100
@@ -487,6 +487,31 @@ export default {
             document.body.removeChild(this.canvas)
             this.input.value=""
         },
+        // http://stackoverflow.com/questions/11929099/html5-canvas-drawimage-ratio-bug-ios
+        cropGetRatio(){
+            var iw = this.img.naturalWidth, ih = this.img.naturalHeight;
+            var canvas = document.createElement('canvas');
+            canvas.width = 1;
+            canvas.height = ih;
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(this.img, 0, 0);
+            var data = ctx.getImageData(0, 0, 1, ih).data;
+            // search image edge pixel position in case it is squashed vertically.
+            var sy = 0;
+            var ey = ih;
+            var py = ih;
+            while (py > sy) {
+                var alpha = data[(py - 1) * 4 + 3];
+                if (alpha === 0) {
+                    ey = py;
+                } else {
+                    sy = py;
+                }
+                py = (ey + sy) >> 1;
+            }
+            var ratio = (py / ih);
+            return (ratio===0)?1:ratio;
+        }
     }
 }
 </script>
