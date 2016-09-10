@@ -234,7 +234,7 @@ export default {
                         this.canvas=document.createElement("canvas")
                         this.canvas.width=this.width
                         this.canvas.height=this.height
-                        this.canvas.setAttribute("style","position:absolute;right:0;top:0;opacity:0;width:0;height:0")
+                        this.canvas.setAttribute("style","position:absolute;left:0;top:0;opacity:0;z-index:99999")
                         this.context=this.canvas.getContext("2d")
                         this.cropToCanvas()
                         document.body.appendChild(this.canvas)
@@ -347,10 +347,12 @@ export default {
                 }else{
                     this.scaleX= e.pageX - this.beginX
                     this.scaleY= e.pageY - this.beginY
+                    
                 }
             }else{
                 this.scaleX= e.pageX - this.beginX
                 this.scaleY= e.pageY - this.beginY
+ 
             }
             this.cropLimit()
         },
@@ -368,19 +370,11 @@ export default {
         },
         cropToCanvas(){
             this.context.clearRect(0,0,this.width,this.height)
-            this.context.drawImage(
-                this.img,
-                // 原始图片选取
-                Math.abs(this.scaleX)*this.img.naturalWidth/this.scaleWidth,
-                Math.abs(this.scaleY)*this.img.naturalHeight/this.scaleHeight,
-                this.img.naturalWidth,
-                this.img.naturalHeight,
-                // 目标缩放比例
-                0,
-                0,
-                this.scaleWidth,
-                this.scaleHeight
-            )
+            let sx= Math.round(Math.abs(this.scaleX)*this.img.naturalWidth/this.scaleWidth) //图像源x坐标
+            let sy= Math.round(Math.abs(this.scaleY)*this.img.naturalHeight/this.scaleHeight) //图像源y坐标
+            let sw=this.width*this.img.naturalWidth/this.scaleWidth
+            let sh=this.height*this.img.naturalHeight/this.scaleHeight
+            this.context.drawImage(this.img,sx,sy,sw,sh,0,0,this.width,this.height)
         },
         cropZoom(){
             let s=this.scale/100
@@ -428,9 +422,7 @@ export default {
         },
         // 提交裁剪
         cropOK(){
- 
             let data=this.canvas.toDataURL("image/jpeg",this.quality||0.8)
-            // console.log(data)
             //没有设置服务器直接返回base64 
             if(this.server==""||this.api==""){
                 this.file=data
@@ -439,15 +431,15 @@ export default {
                 this.input.value=""
                 return false 
             }
-             
             data=window.atob(data.split(',')[1]);
-            let ia = new Uint8Array(data.length);
+            let aBuffer = new ArrayBuffer(data.length);
+            let uBuffer = new Uint8Array(aBuffer);
             for (let i = 0; i < data.length; i++) {
-                ia[i] = data.charCodeAt(i);
+                uBuffer[i] = data.charCodeAt(i);
             }
-            let blob=new Blob([ia], {type:"image/jpeg"})
+            let blob=new Blob([uBuffer], {type:"image/jpeg"})
             let formData = new FormData()
-            formData.append("file", blob)
+            formData.append(this.filename, blob)
             if(this.params!=undefined){
                 for (let key in this.params)formData.append(key, this.params[key])  
             }
@@ -778,7 +770,7 @@ input[type=range]:focus::-ms-fill-upper {
                 @mousedown.prevent="cropDragBegin"
                 @mousemove.prevent="cropDragMove"  
                 @mouseup.prevent="cropDragEnd"
-                @mouseout.prevent="cropDragEnd" 
+ 
                 @touchstart.prevent="cropDragBegin"
                 @touchmove.prevent="cropDragMove"  
                 @touchend.prevent="cropDragEnd"
