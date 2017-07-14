@@ -1,97 +1,125 @@
-# vue-upload
+# Vue Upload
 
-基于vuejs+webpack环境使用的上传组件
-
-[Live demo](http://jinzhe.github.io/vue-upload/)
-
-* 支持服务器的域名和接口单独设置
-* 支持自定义提交字段
-* 支持自定义xhr 提交的header字段/表单name/限定上传格式/文件大小／
-* 支持图片上传前预先裁剪，其中包括裁减按钮替换、宽高、质量（quality）
-* 支持自定义回调方法
-* 支持裁减图片缩放，包括移动端手势支持
+> A file upload components for Vue.js.
 
 
-![](http://ww1.sinaimg.cn/large/823603acgw1f7ngqzth6ig20hq0eku0x.gif)
+### Live Demo
+> http://jinzhe.github.io/vue-upload/
 
+### Getting Started
 
-# Options
-
-* :server   (string)  服务器地址 // Server host,like "http://jinzhe.net"
-* :api   (string)      // Server api path,like "/api/v1/getdata/"
-* :params  (object) 	额外附加的字段，它是一个object
-* :filename   (string)  文件表单名称，默认为file
-* :file   (string)    返回的文件名或地址
-* :ext    (string)    限制文件格式如“jpg,png,zip”
-* :header   (object)   提交服务端的头部字段，它是一个object
-* :limit  (int)  限制大小
-* :multiple	 (bool) 多文件上传
-* :preview   (bool)	预览图片
-* :auto	     (bool)	是否自动上传
-* :crop      (bool) 是否开启裁减
-* :width      (int) 裁减宽度
-* :height      (int) 裁减高度
-* :quality      (float) 裁减质量 （0～1），默认0.8
-* :ok   (string)    确定裁减显示文本
-* :cancel   (string)    取消裁减显示文本
-* :container   (DOM)    包含组件的根dom节点，这个是为了在网页内容很长的情况下为了显示正常使用的（移动滚动条），不设置默认指向document.body。
-* :success    (function)    成功上传回调 
-
-# How to use?
-
+``` html
+<upload 
+    :action="upload.action"
+    :headers="upload.headers"
+    :data="upload.data"
+    :name="upload.name"
+    :limit="upload.limit"
+    :accepts="upload.accepts"
+    :multiple="upload.multiple"
+    :queue="upload.queue"
+    @progress="upload.progress"
+    @success="upload.success"
+    @error="upload.error">
+    <button class="select">上传图片</button>
+</upload>
 ```
-<template>
-<div class="layout">
-    <div class="demo">
-        <upload 
-        :server="upload.server" 
-        :api="upload.api" 
-        :params="upload.params"
-        :success="upload.success"
-        :file.sync="upload.file"
-        :crop="upload.crop"
-        :width="upload.width"
-        :height="upload.height"
-        :ok="upload.ok" 
-        :cancel="upload.cancel">
-            <img src="./upload.svg">
-        </upload>
-    </div>
-</div>
-</template>
 
+```js
 <script>
-import upload from "./upload.vue"
+import upload from './upload.vue'
 export default {
     components:{
         upload
     },
-    data() {
+    data(){
         return {
             upload:{
-                server:"",
-                api:"",
-                params:{
-                    token:"test"
+                action:"http://113.209.72.220/demo-upload.php",
+                headers:{
+                    "Accept":"application/json; charset=utf-8"
                 },
-                file:"",
-                preview:true,
-                crop:true,
-                width:400,
-                height:400,
-                cancel:"取消",
-                ok:"裁剪",
-                success:(data)=>{
-                    alert(data.length)
+                name:"file",
+                limit:10, //10MB
+                accepts:["image/jpeg","image/png","image/gif"],
+                multiple:true,
+                queue:true,
+               // 当前上传文件进度
+                progress:(percent)=>{
+                    console.log(percent)
+                },
+                // 成功上传一次文件
+                success:(result)=>{
+                    this.upload.result=result
+                    // console.log(JSON.parse(result));
+                },
+                // 错误
+                error:(type,result)=>{
+                    // 文件太大
+                    if(type=="limit"){
+                        for (let file of result) {
+                          console.log("超过上传上限",file["type"],file["name"],(file["size"]/1024/1024).toFixed(2)+"MB")  
+                        }
+                    }
+                    // 没有选择文件
+                    if(type=="empty"){
+                        alert("请选择文件")
+                    }
+                    // 没有选择文件
+                    if(type=="action"){
+                        alert("没有指定上传接口api")
+                    }
+                    // 服务器报错
+                    if(type=="server"){
+                         alert("服务器繁忙")
+                    }
                 }
-            },
+            }
         }
     }
 }
 </script>
 ```
- 
-# Conatct
-- Author: [zee](http://jinzhe.net)
-- Tencent QQ Group: 240319632
-- E-mail: 129@jinzhe.net
+
+### Features
+- Only supports modern browsers
+- Support file upload progress
+- Support block upload file
+- Support for restricted upload sizes and formats
+- Support for custom upload form names
+- Support for custom request headers and form fields
+
+
+### Props
+
+- :action String * server api
+- :headers Object default:{} * request headers
+- :data Object default:{} * request post data
+- :name String default:file *  input name
+- :limit int * Maximum upload value
+- :accepts Array default:["image/jpeg","image/png","image/gif"] * Allow upload Mime types
+- :multiple Bool * Multiple choice
+- :queue Bool * Show upload progress 
+- :auto Bool * Select the file and upload it
+- :chunked Bool * Chunked file and upload(Need server support)
+- :dataType String * If the type is "json" ,then return the Object.
+
+### events
+- @success 
+- @error
+- @progress
+
+
+
+### Build Setup
+
+``` bash
+# install dependencies
+npm install
+
+# serve with hot reload at localhost:8080
+npm run dev
+
+# build for production with minification
+npm run build
+```
