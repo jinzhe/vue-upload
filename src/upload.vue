@@ -82,6 +82,7 @@ export default {
             	}
 
             }
+            this.$emit("change",this.safeFiles)
             if (this.auto){
             	this.upload()
             	this.safeFiles=[]

@@ -11,6 +11,7 @@
         :accepts="upload.accepts"
         :multiple="upload.multiple"
         :queue="upload.queue"
+        @change="upload.change"
         @progress="upload.progress"
         @success="upload.success"
         @error="upload.error">
@@ -61,7 +62,11 @@ export default {
                 accepts:["image/jpeg","image/png","image/gif"],
                 multiple:true,
                 queue:true,
-               // 当前上传文件进度
+                // 选择文件后
+                change:(files)=>{
+                    console.log(files);
+                },
+               // 上传文件进度
                 progress:(percent)=>{
                     console.log(percent)
                 },
@@ -72,21 +77,17 @@ export default {
                 },
                 // 错误
                 error:(type,result)=>{
-                    // 文件太大
                     if(type=="limit"){
                         for (let file of result) {
                           console.log("超过上传上限",file["type"],file["name"],(file["size"]/1024/1024).toFixed(2)+"MB")  
                         }
                     }
-                    // 没有选择文件
                     if(type=="empty"){
                         alert("请选择文件")
                     }
-                    // 没有选择文件
                     if(type=="action"){
                         alert("没有指定上传接口api")
                     }
-                    // 服务器报错
                     if(type=="server"){
                          alert("服务器繁忙")
                     }
@@ -113,21 +114,17 @@ export default {
                 },
                 // 错误
                 error:(type,result)=>{
-                    // 文件太大
                     if(type=="limit"){
                         for (let file of result) {
                           console.log("超过上传上限",file["type"],file["name"],(file["size"]/1024/1024).toFixed(2)+"MB")  
                         }
                     }
-                    // 没有选择文件
                     if(type=="empty"){
                         alert("请选择文件")
                     }
-                    // 没有选择文件
                     if(type=="action"){
                         alert("没有指定上传接口api")
                     }
-                    // 服务器报错
                     if(type=="server"){
                          alert("服务器繁忙")
                     }

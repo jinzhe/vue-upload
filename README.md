@@ -18,6 +18,7 @@
     :accepts="upload.accepts"
     :multiple="upload.multiple"
     :queue="upload.queue"
+    @change="upload.change"
     @progress="upload.progress"
     @success="upload.success"
     @error="upload.error">
@@ -44,6 +45,10 @@ export default {
                 accepts:["image/jpeg","image/png","image/gif"],
                 multiple:true,
                 queue:true,
+                 // 选择文件后
+                change:(files)=>{
+                    console.log(files);
+                },
                // 当前上传文件进度
                 progress:(percent)=>{
                     console.log(percent)
@@ -105,6 +110,7 @@ export default {
 - :dataType String * If the type is "json" ,then return the Object.
 
 ### events
+- @change 
 - @success 
 - @error
 - @progress
